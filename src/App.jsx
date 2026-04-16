@@ -34,6 +34,7 @@ function App() {
   const [cardProgress, setCardProgress] = useState(0);
   const [trayProgress, setTrayProgress] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
+  const [uiCanvas, setUiCanvas] = useState(null);
 
   const stateMachineRef = useRef(null);
   const animControllerRef = useRef(new AnimationController());
@@ -189,6 +190,10 @@ function App() {
     }
   }, []);
 
+  const handleCanvasMount = useCallback((canvas) => {
+    setUiCanvas(canvas);
+  }, []);
+
   return (
     <div className="app-container">
       {/* Header */}
@@ -285,6 +290,7 @@ function App() {
               onCancel={handleCancel}
               cardProgress={cardProgress}
               trayProgress={trayProgress}
+              uiCanvas={uiCanvas}
             />
             <OrbitControls
               enablePan={false}
@@ -299,16 +305,12 @@ function App() {
 
         {/* Right Panel */}
         <div className="right-panel">
-          {/* ATM Screen - Bresenham rendered */}
-          <div className="screen-section">
-            <div className="section-header">
-              <span className="section-icon">📺</span>
-              <span>ATM Display <span className="badge">Bresenham</span></span>
-            </div>
-            <div className="atm-screen-wrapper">
-              <BresenhamCanvas atmState={atmState} atmData={atmData} />
-            </div>
-          </div>
+          {/* Internal Bresenham Canvas (Hidden, used as texture) */}
+          <BresenhamCanvas 
+            atmState={atmState} 
+            atmData={atmData} 
+            onCanvasMount={handleCanvasMount} 
+          />
 
           {/* Controls */}
           <div className="controls-section">

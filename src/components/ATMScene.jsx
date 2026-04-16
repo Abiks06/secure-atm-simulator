@@ -25,8 +25,20 @@ import {
 // ============================================================================
 // PHONG-SHADED ATM CHASSIS
 // ============================================================================
-function ATMChassis() {
+function ATMChassis({ uiCanvas }) {
   const meshRef = useRef();
+
+  const texture = useMemo(() => {
+    if (!uiCanvas) return null;
+    const tex = new THREE.CanvasTexture(uiCanvas);
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.minFilter = THREE.LinearFilter;
+    return tex;
+  }, [uiCanvas]);
+
+  useFrame(() => {
+    if (texture) texture.needsUpdate = true;
+  });
 
   const uniforms = useMemo(() => createThreeUniforms(phongChassisUniforms, THREE), []);
 
@@ -74,18 +86,22 @@ function ATMChassis() {
         <meshStandardMaterial color="#0a0a10" metalness={0.9} roughness={0.1} />
       </mesh>
 
-      {/* Screen glass (slightly in front of bezel) */}
+      {/* Screen glass / UI Display */}
       <mesh position={[0, 0.8, 0.79]}>
-        <planeGeometry args={[2.2, 1.5]} />
-        <meshStandardMaterial
-          color="#061820"
-          emissive="#0a3020"
-          emissiveIntensity={0.3}
-          transparent
-          opacity={0.9}
-          metalness={0.1}
-          roughness={0.05}
-        />
+        <planeGeometry args={[2.2, 1.375]} /> {/* Adjusted aspect ratio for 1024x640 */}
+        {texture ? (
+          <meshBasicMaterial map={texture} transparent opacity={0.95} />
+        ) : (
+          <meshStandardMaterial
+            color="#061820"
+            emissive="#0a3020"
+            emissiveIntensity={0.3}
+            transparent
+            opacity={0.9}
+            metalness={0.1}
+            roughness={0.05}
+          />
+        )}
       </mesh>
     </group>
   );
@@ -310,7 +326,7 @@ function Environment() {
 // ============================================================================
 // MAIN ATM SCENE (exported)
 // ============================================================================
-function ATMScene({ onDigit, onEnter, onClear, onCancel, cardProgress, trayProgress }) {
+function ATMScene({ onDigit, onEnter, onClear, onCancel, cardProgress, trayProgress, uiCanvas }) {
   const groupRef = useRef();
 
   // Gentle idle animation
@@ -346,7 +362,7 @@ function ATMScene({ onDigit, onEnter, onClear, onCancel, cardProgress, trayProgr
       <Environment />
 
       <group ref={groupRef}>
-        <ATMChassis />
+        <ATMChassis uiCanvas={uiCanvas} />
         <ATMKeypad
           onDigit={onDigit}
           onEnter={onEnter}
