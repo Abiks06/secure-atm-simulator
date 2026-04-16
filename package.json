@@ -1,0 +1,27 @@
+{
+  "name": "end-of-sem-project",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "homepage": "https://Abiks06.github.io/secure-atm-simulator/",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2",
+    "vite": "^8.0.4"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "howler": "^2.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "three": "^0.183.2"
+  }
+}
